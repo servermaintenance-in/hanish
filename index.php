@@ -1,14 +1,16 @@
 <?php
-// Retrieve the server name
 $serverName = $_SERVER['SERVER_NAME'];
 
-// Retrieve the client/browser IP address
-// We use a fallback check in case the server is behind a proxy
-$clientIP = !empty($_SERVER['HTTP_X_FORWARDED_FOR']) 
-            ? $_SERVER['HTTP_X_FORWARDED_FOR'] 
-            : $_SERVER['REMOTE_ADDR'];
+// Cloudflare → HAProxy → NGINX → PHP
+// Priority: CF-Connecting-IP > X-Forwarded-For > REMOTE_ADDR
+if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+    $clientIP = $_SERVER['HTTP_CF_CONNECTING_IP'];
+} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    $clientIP = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+} else {
+    $clientIP = $_SERVER['REMOTE_ADDR'];
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,12 +23,10 @@ $clientIP = !empty($_SERVER['HTTP_X_FORWARDED_FOR'])
     </style>
 </head>
 <body>
-
     <div class="container">
         <h3>Connection Details</h3>
         <p><b>Server Name:</b> <?php echo htmlspecialchars($serverName); ?></p>
         <p><b>Client IP Address:</b> <?php echo htmlspecialchars($clientIP); ?></p>
     </div>
-
 </body>
 </html>
