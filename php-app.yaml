@@ -48,16 +48,15 @@ metadata:
   name: php-app-ingress
   namespace: hanish
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/proxy-set-headers: "hanish/custom-headers"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
   - host: demo.servermaintenance.in
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - path: /php(/|$)(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: php-app
