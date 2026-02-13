@@ -3,7 +3,6 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: hanish
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -11,7 +10,7 @@ metadata:
   name: php-app
   namespace: hanish
 spec:
-  replicas: 2                          # 2 containers (pods)
+  replicas: 2
   selector:
     matchLabels:
       app: php-app
@@ -22,11 +21,15 @@ spec:
     spec:
       containers:
       - name: php-app
-        image: php-app:latest
+        image: php:8.2-apache
         imagePullPolicy: Always
         ports:
         - containerPort: 80
-
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            curl -o /var/www/html/index.php https://raw.githubusercontent.com/servermaintenance-in/hanish/main/index.php \
+            && apache2-foreground
 ---
 apiVersion: v1
 kind: Service
@@ -34,13 +37,12 @@ metadata:
   name: php-app
   namespace: hanish
 spec:
-  type: ClusterIP                      # Changed to ClusterIP; Ingress handles external traffic
+  type: ClusterIP
   selector:
     app: php-app
   ports:
   - port: 80
     targetPort: 80
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
