@@ -1,2 +1,7 @@
 FROM php:8.2-apache
-COPY index.php /var/www/html/
+
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+CMD git clone https://github.com/servermaintenance-in/hanish.git /tmp/app && \
+    cp -r /tmp/app/* /var/www/html/ && \
+    apache2-foreground
