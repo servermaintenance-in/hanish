@@ -10,7 +10,7 @@ metadata:
   name: php-app
   namespace: hanish
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: php-app
@@ -28,8 +28,10 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
           - |
-            curl -o /var/www/html/index.php https://raw.githubusercontent.com/servermaintenance-in/hanish/main/index.php \
-            && apache2-foreground
+            apt-get update && apt-get install -y git && \
+            git clone https://github.com/servermaintenance-in/hanish.git /tmp/app && \
+            cp -r /tmp/app/* /var/www/html/ && \
+            apache2-foreground
 ---
 apiVersion: v1
 kind: Service
