@@ -23,7 +23,7 @@ spec:
       containers:
       - name: php-app
         image: php-app:latest
-        imagePullPolicy: Never
+        imagePullPolicy: always
         ports:
         - containerPort: 80
 
